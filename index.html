@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nima Core | Portfolio Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="background-mesh"></div>
+
+    <main id="app-container">
+        <header class="portfolio-header">
+            <div class="badge">NIMA CORE SYSTEM</div>
+            <h1>HND Analyzer</h1>
+        </header>
+
+        <div class="master-controls">
+            <label class="custom-toggle">
+                <input type="checkbox" id="comm-toggle" checked>
+                <span class="slider"></span>
+                <span class="toggle-label">Effective Comm-2 Passed (B+ Min)</span>
+            </label>
+            <button id="add-module-btn" class="outline-btn">+ Add Module</button>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="carousel-wrapper">
+                <div id="modules-container"></div>
+            </div>
+
+            <div class="results-panel">
+                <p class="status-subtitle">CURRENT STANDING</p>
+                <div class="gpa-display" id="final-gpa">0.00</div>
+                <div class="award-box" id="award-status-box">
+                    <h3 id="award-status">AWAITING DATA</h3>
+                </div>
+                <p id="error-messages" class="error-text"></p>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="engine.js"></script>
+</body>
+</html>
