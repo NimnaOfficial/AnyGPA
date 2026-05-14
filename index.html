@@ -81,10 +81,26 @@
                 <div class="dashboard-layout">
                     <div class="editor-panel spotlight-card">
                         <div class="panel-header">
-                            <h3>Course Data Entry</h3>
-                            <button id="add-module-btn" class="cyber-btn-outline magnetic-btn">+ Add Row</button>
-                        </div>
+    <h3>Course Data Entry</h3>
+    <div style="display: flex; gap: 1rem;">
+        <input type="file" id="ai-scan-input" accept="image/png, image/jpeg, application/pdf" style="display: none;">
+        
+        <button id="trigger-ai-btn" class="cyber-btn-solid magnetic-btn" style="background: rgba(168, 85, 247, 0.1); color: #c084fc; border: 1px solid #7707df;">
+            + AI Auto-Scan
+        </button>
+        <button id="add-module-btn" class="cyber-btn-outline magnetic-btn">+ Add Row</button>
+    </div>
+</div>
+<div id="ai-warning-banner" class="hidden spotlight-card" style="border-left: 4px solid #facc15; background: rgba(250, 204, 21, 0.05); padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <p style="color: #facc15; font-size: 0.9rem; margin: 0; line-height: 1.4;">
+            <strong>⚠️ AI Scan Complete:</strong> Artificial Intelligence can occasionally misread complex document layouts. Please verify and manually adjust your courses, credits, and grades below before exporting your official transcript.
+        </p>
+        <button onclick="document.getElementById('ai-warning-banner').classList.add('hidden')" style="background: none; border: none; color: #facc15; cursor: pointer; font-size: 1.2rem; padding: 0 0.5rem;">✕</button>
+    </div>
+</div>
                         <div id="modules-container"></div>
+                        
                     </div>
 
                     <div class="report-wrapper">
@@ -160,17 +176,28 @@
     </div>
 
     <div id="admin-dashboard-view" class="hidden" style="margin-top: 100px; padding: 0 5vw; max-width: 1200px; margin-left: auto; margin-right: auto;">
+        
         <header class="sys-header" style="flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <div>
-                <div class="sys-badge" style="background: rgba(255,68,68,0.2); border-color: var(--danger); color: var(--danger); box-shadow: 0 0 20px rgba(255,0,0,0.2);">GOD MODE ENABLED</div>
-                <h1 class="glitch-text" data-text="Database Control" style="color: var(--text-main); font-size: clamp(2rem, 5vw, 3rem);">Database Control</h1>
+                <div class="sys-badge" style="background: rgba(255,68,68,0.2); border-color: var(--danger); color: var(--danger);">GOD MODE ENABLED</div>
+                <h1 style="font-size: 3rem; color: var(--text-main); margin-top: 10px;">Database Control</h1>
             </div>
             <button onclick="showMainApp()" class="cyber-btn-outline magnetic-btn" style="border-color: var(--danger); color: var(--danger);">Terminate Session</button>
         </header>
-        <div class="glass-panel spotlight-card" style="padding: 2rem; overflow-x: auto;">
+
+        <div class="glass-panel" style="padding: 2rem; overflow-x: auto;">
+            <h3 style="color: var(--text-main); margin-bottom: 1rem;">Global Active Frameworks</h3>
             <table class="admin-table" style="min-width: 600px;">
-                <thead><tr><th>ID</th><th>University / System Name</th><th>Country</th><th>Action</th></tr></thead>
-                <tbody id="admin-table-body"></tbody>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>University / System Name</th>
+                        <th>Country</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-table-body">
+                    </tbody>
             </table>
         </div>
     </div>
@@ -212,6 +239,12 @@
                 <input type="text" id="new-sys-country" placeholder="Country" class="modal-input" style="flex: 1; min-width: 150px;">
             </div>
             <div class="sys-badge">DEFINE GRADE SCALE</div>
+            <div style="margin-top: 1rem;">
+    <label style="color: var(--brand-main); font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;">Mandatory Pass Mark (GPA):</label>
+    <input type="number" id="new-sys-pass" class="modal-input" placeholder="e.g., 2.0" step="0.01" min="0.5" max="5.0" required style="margin-top: 5px;">
+</div>
+    <br><br><label style="color: var(--brand-main); font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;">Add Grade with Point:</label>
+
             <div id="custom-grades-container"></div>
             <button id="add-custom-grade-btn" class="cyber-btn-outline magnetic-btn" style="width: 100%; margin-top: 1rem; font-size: 0.85rem;">+ Add Grade Tier</button>
             <div class="modal-actions" style="display: flex; flex-wrap: wrap; margin-top: 2.5rem; justify-content: flex-end; gap: 1rem;">

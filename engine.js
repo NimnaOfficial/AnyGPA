@@ -28,6 +28,8 @@ let tempGradeRules = null;
 let tempSystemName = "";
 let moduleCount = 0;
 let currentStrategy = "STANDARD";
+let currentPassMark = 2.0;
+let tempPassMark = 2.0;
 
 // =====================================================================
 // 2. HARDWARE-ACCELERATED PHYSICS (GPU OPTIMIZED)
@@ -55,13 +57,12 @@ function showToast(message, type = "info") {
   }, 3500);
 }
 
-// 🚀 ENTERPRISE OPTIMIZATION: GSAP QuickSetter for massive performance boost
+// GSAP QuickSetter for massive performance boost
 if (!isTouchDevice()) {
   const glowSetX = gsap.quickSetter("#cursor-glow", "x", "px");
   const glowSetY = gsap.quickSetter("#cursor-glow", "y", "px");
 
   document.addEventListener("mousemove", (e) => {
-    // Direct GPU manipulation bypasses layout thrashing
     glowSetX(e.clientX);
     glowSetY(e.clientY);
 
@@ -74,9 +75,10 @@ if (!isTouchDevice()) {
 }
 
 function apply3DTilt() {
-  if (isTouchDevice()) return; // Abort heavy physics on mobile
-
-  document.querySelectorAll(".tilt-effect").forEach((el) => {
+  if (isTouchDevice()) return;
+  // FIX: Prevent duplicate event listeners causing memory leaks
+  document.querySelectorAll(".tilt-effect:not(.tilt-bound)").forEach((el) => {
+    el.classList.add("tilt-bound");
     el.addEventListener("mousemove", (e) => {
       const rect = el.getBoundingClientRect();
       const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
@@ -101,29 +103,39 @@ function apply3DTilt() {
 }
 
 function applyMagneticHover() {
-  if (isTouchDevice()) return; // Abort heavy physics on mobile
-
-  document.querySelectorAll(".magnetic-btn, .remove-btn").forEach((btn) => {
-    btn.addEventListener("mousemove", (e) => {
-      const rect = btn.getBoundingClientRect();
-      gsap.to(btn, {
-        x: (e.clientX - rect.left - rect.width / 2) * 0.4,
-        y: (e.clientY - rect.top - rect.height / 2) * 0.4,
-        duration: 0.3,
-        ease: "power2.out",
+  if (isTouchDevice()) return;
+  // FIX: Prevent duplicate event listeners causing memory leaks
+  document
+    .querySelectorAll(
+      ".magnetic-btn:not(.hover-bound), .remove-btn:not(.hover-bound)",
+    )
+    .forEach((btn) => {
+      btn.classList.add("hover-bound");
+      btn.addEventListener("mousemove", (e) => {
+        const rect = btn.getBoundingClientRect();
+        gsap.to(btn, {
+          x: (e.clientX - rect.left - rect.width / 2) * 0.4,
+          y: (e.clientY - rect.top - rect.height / 2) * 0.4,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      });
+      btn.addEventListener("mouseleave", () => {
+        gsap.to(btn, {
+          x: 0,
+          y: 0,
+          duration: 0.7,
+          ease: "elastic.out(1, 0.3)",
+        });
       });
     });
-    btn.addEventListener("mouseleave", () => {
-      gsap.to(btn, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.3)" });
-    });
-  });
 }
 
 // =====================================================================
 // 3. SPA ROUTER & MOBILE HUD NAVIGATION
 // =====================================================================
 const hamburgerBtn = document.getElementById("hamburger-btn");
-const mobileNavOverlay = document.getElementById("mobile-nav"); // This targets your new dropdown
+const mobileNavOverlay = document.getElementById("mobile-nav");
 
 function toggleMobileMenu(forceClose = false) {
   if (!hamburgerBtn || !mobileNavOverlay) return;
@@ -137,11 +149,9 @@ function toggleMobileMenu(forceClose = false) {
   }
 }
 
-if (hamburgerBtn) {
+if (hamburgerBtn)
   hamburgerBtn.addEventListener("click", () => toggleMobileMenu());
-}
 
-// Unified Router for both Desktop and Mobile links
 document.querySelectorAll(".nav-link").forEach((link) => {
   link.addEventListener("click", function (e) {
     e.preventDefault();
@@ -169,12 +179,11 @@ document.querySelectorAll(".nav-link").forEach((link) => {
       { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" },
     );
 
-    toggleMobileMenu(true); // Retracts the HUD menu automatically
+    toggleMobileMenu(true);
     window.scrollTo(0, 0);
   });
 });
 
-// Auto-close menu if screen resizes to desktop
 window.addEventListener("resize", () => {
   if (window.innerWidth > 768) toggleMobileMenu(true);
 });
@@ -196,6 +205,7 @@ async function initSystem() {
       const opt = document.createElement("option");
       opt.value = sys.system_id;
       opt.dataset.name = sys.system_name;
+      opt.dataset.pass = sys.pass_mark || 2.0; // Stores the pass mark!
       opt.textContent = `${sys.system_name} (${sys.country})`;
       sysSelector.appendChild(opt);
     });
@@ -214,6 +224,20 @@ async function initSystem() {
       stagger: 0.15,
       ease: "power3.out",
     });
+
+    // 🛡️ THE FIX: AI Banner gracefully enters on startup!
+    const warningBanner = document.getElementById("ai-warning-banner");
+    if (warningBanner) {
+      warningBanner.classList.remove("hidden");
+      gsap.from(warningBanner, {
+        opacity: 0,
+        y: -20,
+        duration: 0.8,
+        delay: 0.5,
+        ease: "back.out(1.2)",
+      });
+    }
+
     showToast("System Online. Engine Ready.", "success");
     apply3DTilt();
   } catch (err) {
@@ -228,14 +252,12 @@ sysSelector.addEventListener("change", (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
   if (e.target.value === "temp") {
     currentGradeRules = tempGradeRules;
+    currentPassMark = tempPassMark; // Apply Temp Pass Mark
     printedSystemName.innerText = tempSystemName + " (Unverified Session)";
     currentStrategy = "STANDARD";
-    dynamicRulesPanel.innerHTML = "";
-    dynamicRulesPanel.classList.add("hidden");
-    updateAllDropdowns();
-    calculateGPA();
-    showToast("Local Session Strategy Active.", "info");
+    // ... rest of the temp logic ...
   } else {
+    currentPassMark = parseFloat(selectedOption.dataset.pass); // Apply DB Pass Mark
     loadRulesForSystem(e.target.value, selectedOption.dataset.name);
   }
 });
@@ -304,8 +326,13 @@ function spawnModuleRow() {
 
   row.innerHTML = `
         <input type="text" placeholder="Course Title..." class="mod-name" aria-label="Course Name">
-        <select class="mod-grade" onchange="calculateGPA()" aria-label="Grade">${optionsHTML}</select>
-        <input type="number" class="mod-credits" value="1" min="1" max="10" onchange="calculateGPA()" aria-label="Credits">
+        <select class="mod-grade" onchange="autoFillPoints(this); calculateGPA()" aria-label="Grade">${optionsHTML}</select>
+        
+        <div style="position: relative; min-width: 95px;">
+            <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.7rem; color: rgba(255,255,255,0.4); pointer-events: none; font-weight: bold; letter-spacing: 1px;">PTS:</span>
+            <input type="number" class="mod-credits" value="0.00" min="0" max="15" step="0.01" onchange="calculateGPA()" aria-label="Points" style="width: 100%; padding-left: 42px; text-align: left; box-sizing: border-box;">
+        </div>
+
         <div class="attempt-container">
             ${currentStrategy === "NIBM_HND" ? `<label class="custom-checkbox magnetic-btn"><input type="checkbox" class="mod-attempt" checked onchange="calculateGPA()"><span class="checkbox-box"></span> 1st Attempt</label>` : ""}
         </div>
@@ -313,7 +340,17 @@ function spawnModuleRow() {
     `;
 
   container.appendChild(row);
+
+  // 🔥 THE MAGIC TOUCH: Instantly auto-fills the PTS box the second the row is created!
+  autoFillPoints(row.querySelector(".mod-grade"));
+
+  applyMagneticHover();
+  calculateGPA();
+
+  container.appendChild(row);
   gsap.from(row, { opacity: 0, y: 15, duration: 0.4, ease: "power2.out" });
+
+  // Applies hover effects only to the newly created buttons!
   applyMagneticHover();
   calculateGPA();
 }
@@ -354,6 +391,15 @@ document
 // =====================================================================
 // 6. ALPHANUMERIC MATRIX SCRAMBLE & MATHEMATICS
 // =====================================================================
+// 🪄 Auto-Fill Logic: Grabs the Grade Point and fills the PTS box!
+window.autoFillPoints = function (selectElement) {
+  const row = selectElement.closest(".module-row");
+  const ptBox = row.querySelector(".mod-credits");
+  if (ptBox) {
+    // Automatically updates the PTS box to match the dropdown (e.g., 4.00)
+    ptBox.value = parseFloat(selectElement.value).toFixed(2);
+  }
+};
 window.calculateGPA = function () {
   const rows = document.querySelectorAll(".module-row");
   let points = 0,
@@ -384,13 +430,13 @@ window.calculateGPA = function () {
     gpaSvgFill.style.strokeDashoffset = 283;
     awardStatusDisplay.innerText = "AWAITING DATA";
     awardStatusDisplay.style.color = "var(--brand-main)";
-    totalCreditsDisplay.innerText = "0";
+    totalCreditsDisplay.innerText = "Total Credits 0.0";
     return;
   }
 
   const finalGpaValue = points / credits;
   const finalGpaStr = finalGpaValue.toFixed(2);
-  totalCreditsDisplay.innerText = credits;
+  totalCreditsDisplay.innerText = credits.toFixed(1);
 
   const cyberChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*X";
   let iterations = 0;
@@ -407,7 +453,6 @@ window.calculateGPA = function () {
     if (iterations > 12) {
       clearInterval(scrambleInterval);
       gpaDisplay.innerText = finalGpaStr;
-
       const dashOffset = 283 - 283 * Math.min(finalGpaValue / 4.0, 1);
       gpaSvgFill.style.strokeDashoffset = dashOffset;
 
@@ -423,11 +468,19 @@ window.calculateGPA = function () {
         },
       );
 
+      // ... inside the setInterval ...
       if (currentStrategy === "NIBM_HND") {
         evaluateNIBMStrategy(finalGpaValue, isCFloorBroken, allFirstAttempt);
       } else {
-        awardStatusDisplay.innerText = "STANDARD EVALUATION";
-        awardStatusDisplay.style.color = "var(--text-muted)";
+        // 🔥 THE NEW CUSTOM PASS MARK EVALUATOR!
+        if (finalGpaValue >= currentPassMark) {
+          setAward("SYSTEM PASSED", "var(--success)");
+        } else {
+          setAward(
+            `INELIGIBLE: GPA < ${currentPassMark.toFixed(2)}`,
+            "var(--danger)",
+          );
+        }
       }
     }
   }, 40);
@@ -465,7 +518,6 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
     return showToast("Dashboard empty. No courses to export.", "error");
 
   showToast("Drawing Mathematical PDF Record...", "info");
-
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("p", "mm", "a4");
 
@@ -483,8 +535,8 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
       ? "NIBM Institutional Gateway Logic"
       : "Standard Cumulative Scale";
   let totalCredits = 0;
-
   let tableData = [];
+
   document.querySelectorAll(".module-row").forEach((row) => {
     const name =
       row.querySelector(".mod-name").value.trim() || "Unspecified Course";
@@ -492,7 +544,6 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
     const gradeText =
       gradeSelect.options[gradeSelect.selectedIndex].text.split(" ")[0];
     const credits = parseFloat(row.querySelector(".mod-credits").value) || 0;
-
     totalCredits += credits;
     tableData.push([name, credits.toString(), gradeText]);
   });
@@ -533,9 +584,12 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
     align: "right",
   });
   doc.setFont("helvetica", "normal");
-  doc.text(`Total Credits Attempted: ${totalCredits}`, pageWidth - 20, 73, {
-    align: "right",
-  });
+  doc.text(
+    `Total Credits Attempted: ${totalCredits.toFixed(1)}`,
+    pageWidth - 20,
+    73,
+    { align: "right" },
+  );
 
   doc.autoTable({
     startY: 85,
@@ -620,8 +674,9 @@ const gradesContainer = document.getElementById("custom-grades-container");
 
 function addCustomGradeRow(grade = "", points = "") {
   const rowId = `cg-${Date.now()}`;
-  const html = `<div class="custom-grade-row" id="${rowId}"><input type="text" class="modal-input cg-name" placeholder="Grade (A+)" value="${grade}" style="margin:0;"><input type="number" class="modal-input cg-points" placeholder="Points (4.0)" step="0.01" value="${points}" style="margin:0;"><button class="remove-btn" onclick="document.getElementById('${rowId}').remove()">✕</button></div>`;
+  const html = `<div class="custom-grade-row" id="${rowId}"><input type="text" class="modal-input cg-name" placeholder="Grade (A+)" value="${grade}" style="margin:0;"><input type="number" class="modal-input cg-points" placeholder="Points (4.0)" step="0.01" value="${points}" style="margin:0;"><button class="remove-btn magnetic-btn" onclick="document.getElementById('${rowId}').remove()">✕</button></div>`;
   gradesContainer.insertAdjacentHTML("beforeend", html);
+  applyMagneticHover();
 }
 
 document.getElementById("open-builder-btn").addEventListener("click", () => {
@@ -658,8 +713,66 @@ document
 document.getElementById("use-temp-sys-btn").addEventListener("click", () => {
   const sysName =
     document.getElementById("new-sys-name").value.trim() || "Custom Session";
-  let customRules = {},
-    valid = false;
+
+  const passInputEl = document.getElementById("new-sys-pass");
+  if (!passInputEl)
+    return showToast("System Error: Pass Mark input missing.", "error");
+
+  const passMark = parseFloat(passInputEl.value);
+  if (isNaN(passMark) || passMark <= 0)
+    return showToast("A valid Pass Mark is mandatory.", "error");
+
+  tempPassMark = passMark;
+
+  let customRules = {};
+  let valid = false;
+
+  document.querySelectorAll(".custom-grade-row").forEach((row) => {
+    const g = row.querySelector(".cg-name").value.trim();
+    const p = parseFloat(row.querySelector(".cg-points").value);
+    if (g && !isNaN(p)) {
+      customRules[g] = p;
+      valid = true;
+    }
+  });
+
+  if (!valid) return showToast("Define at least one valid grade.", "error");
+
+  tempSystemName = sysName;
+  tempGradeRules = customRules;
+
+  if (!document.querySelector('option[value="temp"]')) {
+    const opt = document.createElement("option");
+    opt.value = "temp";
+    opt.dataset.name = tempSystemName;
+    opt.textContent = `${tempSystemName} [Session Only]`;
+    sysSelector.appendChild(opt);
+  } else {
+    document.querySelector('option[value="temp"]').textContent =
+      `${tempSystemName} [Session Only]`;
+  }
+
+  sysSelector.value = "temp";
+  sysSelector.dispatchEvent(new Event("change"));
+  showToast("Session Strategy Applied.", "success");
+  document.getElementById("close-modal-btn").click();
+});
+document.getElementById("use-temp-sys-btn").addEventListener("click", () => {
+  const sysName =
+    document.getElementById("new-sys-name").value.trim() || "Custom Session";
+
+  const passInputEl = document.getElementById("new-sys-pass");
+  if (!passInputEl)
+    return showToast("System Error: Pass Mark input missing.", "error");
+
+  const passMark = parseFloat(passInputEl.value);
+  if (isNaN(passMark) || passMark <= 0)
+    return showToast("A valid Pass Mark is mandatory.", "error");
+
+  tempPassMark = passMark;
+
+  let customRules = {};
+  let valid = false;
 
   document.querySelectorAll(".custom-grade-row").forEach((row) => {
     const g = row.querySelector(".cg-name").value.trim();
@@ -695,16 +808,25 @@ document.getElementById("use-temp-sys-btn").addEventListener("click", () => {
 document.getElementById("save-sys-btn").addEventListener("click", async () => {
   const sysName = document.getElementById("new-sys-name").value.trim();
   const sysCountry = document.getElementById("new-sys-country").value.trim();
-  let customRules = [];
 
+  const passInputEl = document.getElementById("new-sys-pass");
+  if (!passInputEl)
+    return showToast("System Error: Pass Mark input missing.", "error");
+  const passMark = parseFloat(passInputEl.value);
+
+  let customRules = [];
   document.querySelectorAll(".custom-grade-row").forEach((row) => {
     const g = row.querySelector(".cg-name").value.trim();
     const p = parseFloat(row.querySelector(".cg-points").value);
     if (g && !isNaN(p)) customRules.push({ grade_letter: g, point_value: p });
   });
 
-  if (!sysName || !sysCountry || customRules.length === 0)
-    return showToast("Fill Name, Country, and Grades.", "error");
+  if (!sysName || !sysCountry || customRules.length === 0 || isNaN(passMark)) {
+    return showToast(
+      "Please fill Name, Country, Grades, AND Pass Mark.",
+      "error",
+    );
+  }
 
   const saveBtn = document.getElementById("save-sys-btn");
   saveBtn.innerText = "Deploying...";
@@ -717,6 +839,7 @@ document.getElementById("save-sys-btn").addEventListener("click", async () => {
       body: JSON.stringify({
         system_name: sysName,
         country: sysCountry,
+        pass_mark: passMark,
         custom_rules: customRules,
       }),
     });
@@ -726,6 +849,7 @@ document.getElementById("save-sys-btn").addEventListener("click", async () => {
       showToast(data.message, "success");
       document.getElementById("new-sys-name").value = "";
       document.getElementById("new-sys-country").value = "";
+      document.getElementById("new-sys-pass").value = "";
       document.getElementById("close-modal-btn").click();
       initSystem();
     } else {
@@ -918,16 +1042,31 @@ window.showMainApp = function () {
   window.scrollTo(0, 0);
 };
 
+// 📊 Database Table Renderer (Admin.php Style)
 async function loadAdminDatabase() {
-  const res = await fetch(`${apiBase}?action=get_systems`);
-  const systems = await res.json();
-  const tbody = document.getElementById("admin-table-body");
-  tbody.innerHTML = "";
+  try {
+    const res = await fetch(`${apiBase}?action=get_systems`);
+    const systems = await res.json();
+    const tbody = document.getElementById("admin-table-body");
+    tbody.innerHTML = "";
 
-  systems.forEach((sys) => {
-    tbody.innerHTML += `<tr><td style="color: var(--text-muted);">#${sys.system_id}</td><td style="font-size: 1.1rem;">${sys.system_name}</td><td style="color: var(--text-muted);">${sys.country}</td><td><button class="btn-purge magnetic-btn" onclick="purgeSystem(${sys.system_id})">PURGE</button></td></tr>`;
-  });
-  applyMagneticHover();
+    systems.forEach((sys) => {
+      tbody.innerHTML += `
+                <tr>
+                    <td>#${sys.system_id}</td>
+                    <td style="font-weight: bold; color: white;">${sys.system_name}</td>
+                    <td style="color: var(--text-muted);">${sys.country}</td>
+                    <td>
+                        <button class="delete-btn magnetic-btn" onclick="purgeSystem(${sys.system_id})">PURGE</button>
+                    </td>
+                </tr>
+            `;
+    });
+    // Triggers hover state for the newly created Purge buttons
+    applyMagneticHover();
+  } catch (error) {
+    showToast("Failed to load admin table.", "error");
+  }
 }
 
 window.purgeSystem = async function (id) {
@@ -960,3 +1099,117 @@ document.addEventListener("DOMContentLoaded", initSystem);
 document
   .querySelectorAll(".mobile-year, #current-year")
   .forEach((el) => (el.textContent = new Date().getFullYear()));
+
+// =====================================================================
+// 12. AI MARKSHEET SCANNER LOGIC
+// =====================================================================
+const aiTriggerBtn = document.getElementById("trigger-ai-btn");
+const aiFileInput = document.getElementById("ai-scan-input");
+
+if (aiTriggerBtn) {
+  aiTriggerBtn.addEventListener("click", () => aiFileInput.click());
+}
+
+if (aiFileInput) {
+  aiFileInput.addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    showToast("AI Vision Analyzing Transcript...", "info");
+    aiTriggerBtn.innerText = "Scanning...";
+    aiTriggerBtn.disabled = true;
+
+    const reader = new FileReader();
+    reader.onload = async function (e) {
+      const base64Image = e.target.result;
+      const mimeType = file.type;
+
+      try {
+        const response = await fetch(`${apiBase}?action=ai_scan_marksheet`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: base64Image, mimeType: mimeType }),
+        });
+
+        const rawData = await response.text();
+        console.log("Raw Server/AI Response:", rawData);
+
+        let extractedData;
+
+        try {
+          extractedData = JSON.parse(rawData);
+        } catch (parseError) {
+          const jsonStart = rawData.indexOf("[");
+          const jsonEnd = rawData.lastIndexOf("]");
+
+          if (jsonStart !== -1 && jsonEnd !== -1) {
+            const cleanJsonString = rawData.substring(jsonStart, jsonEnd + 1);
+            extractedData = JSON.parse(cleanJsonString);
+          } else {
+            throw new Error(
+              "Server returned unknown format. Press F12 and check Console.",
+            );
+          }
+        }
+
+        if (extractedData && extractedData.error)
+          throw new Error(extractedData.error);
+
+        if (extractedData && !Array.isArray(extractedData)) {
+          const objKeys = Object.keys(extractedData);
+          const arrayKey = objKeys.find((key) =>
+            Array.isArray(extractedData[key]),
+          );
+          if (arrayKey) {
+            extractedData = extractedData[arrayKey];
+          } else {
+            throw new Error("AI read the file, but format was strange.");
+          }
+        }
+
+        // Clear existing rows before injecting new ones
+        document.getElementById("modules-container").innerHTML = "";
+        moduleCount = 0;
+
+        extractedData.forEach((item) => {
+          spawnModuleRow();
+
+          const rows = document.querySelectorAll(".module-row");
+          const latestRow = rows[rows.length - 1];
+
+          // 1. Inject Course Name
+          latestRow.querySelector(".mod-name").value =
+            item.course || "Unknown Course";
+
+          // 2. Select the Grade (Handles undefined grades safely)
+          const gradeSelect = latestRow.querySelector(".mod-grade");
+          Array.from(gradeSelect.options).forEach((opt) => {
+            if (
+              item.grade &&
+              opt.text
+                .trim()
+                .toUpperCase()
+                .startsWith(item.grade.trim().toUpperCase())
+            ) {
+              gradeSelect.value = opt.value;
+            }
+          });
+
+          // 3. Force the Auto-Fill to run NOW so it reads the newly selected grade!
+          autoFillPoints(gradeSelect);
+        });
+
+        calculateGPA();
+        showToast("Data Extracted & Injected Successfully!", "success");
+      } catch (error) {
+        console.error("AI Parse Error:", error);
+        showToast(error.message || "AI failed to read the document.", "error");
+      } finally {
+        aiTriggerBtn.innerText = "+ AI Auto-Scan";
+        aiTriggerBtn.disabled = false;
+        aiFileInput.value = "";
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
