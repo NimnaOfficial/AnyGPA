@@ -1,21 +1,22 @@
 <?php
-// db.php - The Secure XAMPP Database Connection
+// db.php - Secure Production Database Connection
+
 $host = 'localhost';
-$port = '3307';         // Specify your custom XAMPP port here!
+$port = '3307';         // Remove port=$port from $dsn on live server if needed
 $db   = 'any_gpa_core';
-$user = 'root';         // Default XAMPP username
-$pass = '';             // Default XAMPP password is empty
+$user = 'root';         
+$pass = '';             
 
 try {
-    // Notice how port=$port is now safely tucked inside the main string
-    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8";
-    
-    // We only pass 3 arguments: DSN, User, Password
+    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
     $pdo = new PDO($dsn, $user, $pass);
     
-    // Turn on strict error reporting
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Strict Enterprise Security Protocols
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC); 
+    $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false); 
+
 } catch (PDOException $e) {
-    die(json_encode(["error" => "Database Connection Failed: " . $e->getMessage()]));
+    die(json_encode(["error" => "FATAL ERROR: Core Database Offline."]));
 }
 ?>
