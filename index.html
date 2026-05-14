@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANY GPA | Global SaaS Calculator</title>
+    <link rel="icon" type="image/png" href="favicon.ico">
+    
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -62,7 +64,10 @@
 
                     <div class="report-wrapper">
                         <div class="results-panel glass-panel tilt-effect spotlight-card" id="pdf-report-card">
-                            <div class="report-branding"><h2>ANY GPA</h2><p id="printed-system-name">Official Academic Report</p></div>
+                            <div class="report-branding">
+                                <h2>ANY GPA</h2>
+                                <p id="printed-system-name">Official Academic Report</p>
+                            </div>
                             <p class="status-subtitle">OVERALL STANDING</p>
                             
                             <div class="gpa-visualizer">
@@ -75,7 +80,10 @@
                             
                             <div id="award-status" class="award-status-text">AWAITING DATA</div>
                             <div class="stats-row">
-                                <div class="stat-box"><span class="stat-label">Total Credits</span><span class="stat-value" id="total-credits-display">0</span></div>
+                                <div class="stat-box">
+                                    <span class="stat-label">Total Credits</span>
+                                    <span class="stat-value" id="total-credits-display">0</span>
+                                </div>
                             </div>
                         </div>
                         <button id="export-pdf-btn" class="cyber-btn-solid magnetic-btn" style="margin-top: 2rem;">Download Official Transcript</button>
@@ -103,8 +111,8 @@
                     <div class="sys-badge">DEVELOPER COMMUNICATOR</div>
                     <h2 style="font-size: 3rem; font-weight: 800; margin-bottom: 2rem; color: var(--text-main); letter-spacing: -1px;">System<br>Architect.</h2>
                     <div class="contact-grid" style="grid-template-columns: 1fr; gap: 1.5rem;">
-                        <div class="contact-node tilt-effect spotlight-card"><span class="node-label">Lead Engineer</span><h4 class="node-data">K.G.L. Sandanimne</h4></div>
-                        <div class="contact-node tilt-effect spotlight-card"><span class="node-label">Direct Line</span><h4 class="node-data">+94 767 765 833</h4></div>
+                        <div class="contact-node tilt-effect spotlight-card"><span class="node-label">Lead Engineer</span><h4 class="node-data">Nima</h4></div>
+                        <div class="contact-node tilt-effect spotlight-card"><span class="node-label">Index Number</span><h4 class="node-data">CODSE251F-003</h4></div>
                         <div class="contact-node tilt-effect spotlight-card"><span class="node-label">GitHub Account</span><h4 class="node-data"><a href="https://github.com/NimnaOfficial" target="_blank">NimnaOfficial</a></h4></div>
                         <div class="contact-node tilt-effect spotlight-card"><span class="node-label">LinkedIn</span><h4 class="node-data"><a href="https://www.linkedin.com/in/sandanimne-k-g-l-a276aa34a" target="_blank">/in/Sandanimne</a></h4></div>
                     </div>
@@ -189,16 +197,9 @@
         </div>
     </div>
 
-    <div id="hidden-pdf-template" class="pdf-print-container" style="display: none;">
-        <div class="pdf-header"><h1 style="color: #000; font-family: 'Times New Roman', serif; border-bottom: 2px solid #000; padding-bottom: 10px;">OFFICIAL ACADEMIC TRANSCRIPT</h1><h2 id="pdf-uni-name" style="margin-top: 15px; text-transform: uppercase;">University Name</h2><p style="color: #555; font-style: italic;">Issued by ANY GPA Global Certification</p></div>
-        <div class="pdf-meta-data" style="background: #f9f9f9; padding: 15px; border: 1px solid #ddd;"><p><strong>Date of Record:</strong> <span id="pdf-date"></span></p><p><strong>Document Verification ID:</strong> <span id="pdf-verify-id" style="font-family: monospace;"></span></p></div>
-        <table class="pdf-table"><thead><tr><th style="width: 60%;">Course / Module Title</th><th style="width: 20%; text-align: center;">Credits</th><th style="width: 20%; text-align: center;">Grade Awarded</th></tr></thead><tbody id="pdf-course-table-body"></tbody></table>
-        <div class="pdf-summary-box" style="border: 2px solid #000; padding: 20px; text-align: right; margin-top: 30px;"><h3 style="margin: 0; font-size: 22px;">Cumulative GPA: <span id="pdf-final-gpa">0.00</span></h3><p id="pdf-award-status" style="font-weight: bold; font-size: 18px; margin-top: 10px; text-transform: uppercase;"></p></div>
-        <div class="pdf-signatures" style="margin-top: 60px; display: flex; justify-content: space-between;"><div style="text-align: center; width: 40%;"><div style="border-bottom: 1px solid #000; height: 40px;"></div><p style="margin-top: 5px; font-weight: bold;">System Administrator</p></div><div style="text-align: center; width: 40%;"><div style="border-bottom: 1px solid #000; height: 40px;"></div><p style="margin-top: 5px; font-weight: bold;">Registrar Seal</p></div></div>
-    </div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="engine.js"></script>
 </body>
 </html>
