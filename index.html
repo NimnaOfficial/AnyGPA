@@ -2,34 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
     <title>ANY GPA | Global SaaS Calculator</title>
     <link rel="icon" type="image/png" href="favicon.ico">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
+    
+    <meta name="theme-color" content="#050505">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
 </head>
 <body>
 
     <div class="noise-overlay"></div>
     <div class="scanlines"></div>
+    <div class="cursor-glow" id="cursor-glow"></div>
+    <div class="cyber-grid" id="cyber-grid"></div>
     
     <div id="global-loader" class="global-loader">
         <div class="spinner"></div>
         <h2 class="glitch-text" data-text="CONNECTING TO CORE...">CONNECTING TO CORE...</h2>
     </div>
-    
-    <div class="cursor-glow" id="cursor-glow"></div>
-    <div class="cyber-grid" id="cyber-grid"></div>
 
     <nav class="top-nav">
         <div class="nav-brand">ANY GPA<span style="color: var(--brand-main);">.</span></div>
-        <ul class="nav-links">
+        
+        <ul class="nav-links desktop-only">
             <li><a href="#" data-target="calculator-section" class="nav-link active">Calculator</a></li>
             <li><a href="#" data-target="about-section" class="nav-link">About System</a></li>
             <li><a href="#" data-target="contact-section" class="nav-link">Contact</a></li>
         </ul>
+
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle navigation">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
     </nav>
+
+    <div class="mobile-dropdown-menu" id="mobile-nav">
+    <ul class="mobile-nav-list">
+        <li><a href="#" data-target="calculator-section" class="nav-link mobile-link active">Calculator</a></li>
+        <li><a href="#" data-target="about-section" class="nav-link mobile-link">About System</a></li>
+        <li><a href="#" data-target="contact-section" class="nav-link mobile-link">Contact</a></li>
+    </ul>
+</div>
 
     <div id="toast-container" class="toast-container"></div>
 
@@ -44,8 +67,10 @@
                     </div>
                     <div class="db-controls">
                         <div class="db-selector-wrapper">
-                            <label for="system-selector">Active Grading Strategy:</label>
-                            <select id="system-selector"><option value="">Loading Global Systems...</option></select>
+                            <label for="system-selector" style="display:none;">Active Grading Strategy:</label>
+                            <select id="system-selector" aria-label="Select Grading Strategy">
+                                <option value="">Loading Global Systems...</option>
+                            </select>
                         </div>
                         <button id="open-builder-btn" class="cyber-btn-outline magnetic-btn">Build Custom Strategy</button>
                     </div>
@@ -93,40 +118,40 @@
         </section>
 
         <section id="about-section" class="tab-section hidden">
-            <div class="glass-panel spotlight-card" style="padding: 5rem 4rem; max-width: 1200px; margin: 0 auto;">
+            <div class="glass-panel spotlight-card" style="padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; text-align: center;">
                 <div class="sys-badge">SYSTEM ARCHITECTURE</div>
-                <h2 style="font-size: 3.5rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--text-main); letter-spacing: -2px;">About ANY GPA</h2>
-                <p style="color: var(--text-muted); max-width: 700px; margin: 0 auto 4rem auto; line-height: 1.8; font-size: 1.1rem; text-align: center;">ANY GPA is a globally crowdsourced academic calculation engine. Built for flexibility, it allows students from any university worldwide to input, save, and share their specific grading frameworks and calculation strategies.</p>
+                <h2 style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: 1.5rem; color: var(--text-main); letter-spacing: -2px;">About ANY GPA</h2>
+                <p style="color: var(--text-muted); max-width: 700px; margin: 0 auto 4rem auto; line-height: 1.8; font-size: 1.1rem;">ANY GPA is a globally crowdsourced academic calculation engine. Built for flexibility, it allows students from any university worldwide to input, save, and share their specific grading frameworks and calculation strategies.</p>
                 <div class="feature-grid">
                     <div class="feature-card tilt-effect"><div class="card-icon">🌍</div><h3>Global Database</h3><p>Access grading scales from institutions worldwide.</p></div>
-                    <div class="feature-card tilt-effect"><div class="card-icon">🧠</div><h3>Session Memory</h3><p>Compute grades locally using temporary session strategies without altering the database.</p></div>
+                    <div class="feature-card tilt-effect"><div class="card-icon">🧠</div><h3>Session Memory</h3><p>Compute grades locally using temporary session strategies.</p></div>
                     <div class="feature-card tilt-effect"><div class="card-icon">📜</div><h3>Verified Transcripts</h3><p>Generate highly accurate, printable academic records.</p></div>
                 </div>
             </div>
         </section>
 
         <section id="contact-section" class="tab-section hidden">
-            <div class="dashboard-layout" style="max-width: 1200px; margin: 0 auto; grid-template-columns: 1fr 1fr; align-items: start;">
-                <div class="glass-panel spotlight-card" style="padding: 4rem;">
+            <div class="dashboard-layout" style="max-width: 1200px; margin: 0 auto; align-items: start;">
+                <div class="glass-panel spotlight-card" style="padding: 3rem;">
                     <div class="sys-badge">DEVELOPER COMMUNICATOR</div>
-                    <h2 style="font-size: 3rem; font-weight: 800; margin-bottom: 2rem; color: var(--text-main); letter-spacing: -1px;">System<br>Architect.</h2>
-                    <div class="contact-grid" style="grid-template-columns: 1fr; gap: 1.5rem;">
-                        <div class="contact-node tilt-effect spotlight-card"><span class="node-label">Lead Engineer</span><h4 class="node-data">Nima</h4></div>
-                        <div class="contact-node tilt-effect spotlight-card"><span class="node-label">Index Number</span><h4 class="node-data">CODSE251F-003</h4></div>
+                    <h2 style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 2rem; color: var(--text-main); letter-spacing: -1px;">System Architect.</h2>
+                    <div class="contact-grid">
+                        <div class="contact-node tilt-effect spotlight-card"><span class="node-label">Lead Engineer</span><h4 class="node-data">K. G. L. Sandanimne</h4></div>
+                        <div class="contact-node tilt-effect spotlight-card"><span class="node-label">Portfolio</span><h4 class="node-data"><a href="imnaofficial.github.io/My-Portfolio/" target="_blank">Sandanimne</a></h4></div>
                         <div class="contact-node tilt-effect spotlight-card"><span class="node-label">GitHub Account</span><h4 class="node-data"><a href="https://github.com/NimnaOfficial" target="_blank">NimnaOfficial</a></h4></div>
-                        <div class="contact-node tilt-effect spotlight-card"><span class="node-label">LinkedIn</span><h4 class="node-data"><a href="https://www.linkedin.com/in/sandanimne-k-g-l-a276aa34a" target="_blank">/in/Sandanimne</a></h4></div>
+                        <div class="contact-node tilt-effect spotlight-card"><span class="node-label">LinkedIn</span><h4 class="node-data"><a href="https://www.linkedin.com/in/sandanimne-k-g-l-a276aa34a" target="_blank">/in/Sandanimne K.G.L</a></h4></div>
                     </div>
                 </div>
 
-                <div class="glass-panel spotlight-card" style="padding: 4rem; border-color: var(--brand-main); box-shadow: inset 0 0 30px rgba(255,215,0,0.05);">
+                <div class="glass-panel spotlight-card" style="padding: 3rem; border-color: var(--brand-main); box-shadow: inset 0 0 30px rgba(255,215,0,0.05);">
                     <div class="sys-badge" style="color: #fff; border-color: #fff; background: rgba(255,255,255,0.1);">DIRECT TRANSMISSION</div>
                     <h3 style="margin-bottom: 2rem; font-size: 1.5rem;">Secure Message Terminal</h3>
                     <form id="dm-form" style="display: flex; flex-direction: column; gap: 1rem;">
                         <input type="hidden" name="access_key" value="faefdf47-5011-4017-8322-05d957cce078">
                         <input type="hidden" name="subject" value="ANY GPA - New Direct Transmission">
-                        <input type="text" name="name" id="dm-name" placeholder="Sender Alias" class="modal-input" required>
-                        <input type="email" name="email" id="dm-email" placeholder="Secure Return Address (Email)" class="modal-input" required>
-                        <textarea name="message" id="dm-message" placeholder="Encrypted Payload (Message)..." class="modal-input" rows="5" required></textarea>
+                        <input type="text" name="name" id="dm-name" placeholder="Sender Alias" class="modal-input" required aria-label="Sender Name">
+                        <input type="email" name="email" id="dm-email" placeholder="Secure Return Address" class="modal-input" required aria-label="Return Email">
+                        <textarea name="message" id="dm-message" placeholder="Encrypted Payload (Message)..." class="modal-input" rows="5" required aria-label="Message Payload"></textarea>
                         <button type="submit" id="dm-submit-btn" class="cyber-btn-solid magnetic-btn" style="margin-top: 1rem;">Transmit to Admin Core</button>
                     </form>
                 </div>
@@ -134,16 +159,16 @@
         </section>
     </div>
 
-    <div id="admin-dashboard-view" class="hidden" style="margin-top: 100px; padding: 0 4rem; max-width: 1200px; margin-left: auto; margin-right: auto;">
-        <header class="sys-header" style="flex-direction: row; justify-content: space-between; align-items: center;">
+    <div id="admin-dashboard-view" class="hidden" style="margin-top: 100px; padding: 0 5vw; max-width: 1200px; margin-left: auto; margin-right: auto;">
+        <header class="sys-header" style="flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <div>
                 <div class="sys-badge" style="background: rgba(255,68,68,0.2); border-color: var(--danger); color: var(--danger); box-shadow: 0 0 20px rgba(255,0,0,0.2);">GOD MODE ENABLED</div>
-                <h1 class="glitch-text" data-text="Database Control" style="color: var(--text-main);">Database Control</h1>
+                <h1 class="glitch-text" data-text="Database Control" style="color: var(--text-main); font-size: clamp(2rem, 5vw, 3rem);">Database Control</h1>
             </div>
             <button onclick="showMainApp()" class="cyber-btn-outline magnetic-btn" style="border-color: var(--danger); color: var(--danger);">Terminate Session</button>
         </header>
-        <div class="glass-panel spotlight-card" style="padding: 2rem;">
-            <table class="admin-table">
+        <div class="glass-panel spotlight-card" style="padding: 2rem; overflow-x: auto;">
+            <table class="admin-table" style="min-width: 600px;">
                 <thead><tr><th>ID</th><th>University / System Name</th><th>Country</th><th>Action</th></tr></thead>
                 <tbody id="admin-table-body"></tbody>
             </table>
@@ -153,12 +178,12 @@
     <div id="admin-warning-modal" class="modal-overlay hidden" style="background: rgba(10, 0, 0, 0.95); backdrop-filter: blur(20px);">
         <div class="modal-content tilt-effect spotlight-card" style="border: 1px solid var(--danger); box-shadow: inset 0 0 50px rgba(255,0,0,0.1), 0 0 100px rgba(255, 68, 68, 0.15); text-align: center;">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.5" style="margin-bottom: 1.5rem; filter: drop-shadow(0 0 10px rgba(255,0,0,0.5));"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            <h2 style="color: var(--danger); letter-spacing: 4px; font-weight: 800; font-size: 2rem;">SECURITY WARNING</h2>
+            <h2 style="color: var(--danger); letter-spacing: 4px; font-weight: 800; font-size: clamp(1.5rem, 4vw, 2rem);">SECURITY WARNING</h2>
             <p style="color: #ff8888; font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem;">Attempting to access restricted Core Database.</p>
             <p style="color: rgba(255,255,255,0.5); font-size: 0.95rem; margin-bottom: 2.5rem;">Unauthorized modifications will cause catastrophic system failure. Explicit authorization required.</p>
             <p style="color: var(--text-main); font-size: 0.8rem; letter-spacing: 3px; margin-bottom: 0.8rem; opacity: 0.7;">TYPE "I UNDERSTAND" BELOW</p>
             <input type="text" id="security-phrase-input" class="modal-input" style="border-color: rgba(255,0,0,0.5); background: rgba(255,0,0,0.05); color: var(--danger); text-align: center; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; font-size: 1.2rem;">
-            <div class="modal-actions" style="justify-content: center; margin-top: 2.5rem;">
+            <div class="modal-actions" style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 2.5rem;">
                 <button id="abort-warning-btn" class="cyber-btn-outline magnetic-btn" style="border-color: var(--text-muted); color: var(--text-muted);">Abort Connection</button>
                 <button id="verify-warning-btn" class="cyber-btn-solid" style="background: var(--danger); color: white; opacity: 0.3; pointer-events: none; box-shadow: 0 0 20px rgba(255,0,0,0.4);">Access Core Login</button>
             </div>
@@ -169,9 +194,9 @@
         <div class="modal-content glass-panel tilt-effect spotlight-card" style="text-align: center; max-width: 400px; border-color: var(--brand-main); box-shadow: inset 0 0 30px rgba(255,215,0,0.05);">
             <h2 style="color: var(--brand-main); letter-spacing: 2px;">CREDENTIALS REQUIRED</h2>
             <p style="margin-bottom: 2rem; color: var(--text-muted);">Enter Master Authentication</p>
-            <input type="text" id="admin-user" placeholder="Username" class="modal-input" style="text-align: center; letter-spacing: 2px;">
+            <input type="text" id="admin-user" placeholder="Username" class="modal-input" style="text-align: center; letter-spacing: 2px; margin-bottom: 1rem;">
             <input type="password" id="admin-pass" placeholder="Password" class="modal-input" style="text-align: center; letter-spacing: 8px;">
-            <div class="modal-actions" style="justify-content: center; margin-top: 2rem;">
+            <div class="modal-actions" style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
                 <button id="cancel-admin-btn" class="cyber-btn-outline magnetic-btn">Cancel</button>
                 <button id="auth-admin-btn" class="cyber-btn-solid magnetic-btn">Authorize</button>
             </div>
@@ -181,25 +206,55 @@
     <div id="builder-modal" class="modal-overlay hidden">
         <div class="modal-content glass-panel scrollable-modal tilt-effect spotlight-card" style="max-width: 700px;">
             <h2>Build Global Strategy</h2>
-            <p style="margin-bottom: 1rem;">Define custom rules. Choose to deploy globally to the database, or use locally for this session only.</p>
-            <div class="input-group" style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-                <input type="text" id="new-sys-name" placeholder="University & Program" class="modal-input" style="margin:0;">
-                <input type="text" id="new-sys-country" placeholder="Country" class="modal-input" style="margin:0;">
+            <p style="margin-bottom: 1rem; color: var(--text-muted);">Define custom rules. Deploy globally to the database, or use locally for this session.</p>
+            <div class="input-group" style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                <input type="text" id="new-sys-name" placeholder="University & Program" class="modal-input" style="flex: 1; min-width: 200px;">
+                <input type="text" id="new-sys-country" placeholder="Country" class="modal-input" style="flex: 1; min-width: 150px;">
             </div>
             <div class="sys-badge">DEFINE GRADE SCALE</div>
             <div id="custom-grades-container"></div>
             <button id="add-custom-grade-btn" class="cyber-btn-outline magnetic-btn" style="width: 100%; margin-top: 1rem; font-size: 0.85rem;">+ Add Grade Tier</button>
-            <div class="modal-actions" style="margin-top: 2.5rem; justify-content: flex-end; gap: 1rem;">
+            <div class="modal-actions" style="display: flex; flex-wrap: wrap; margin-top: 2.5rem; justify-content: flex-end; gap: 1rem;">
                 <button id="close-modal-btn" class="cyber-btn-outline magnetic-btn" style="border-color: var(--text-muted); color: var(--text-muted);">Cancel</button>
                 <button id="use-temp-sys-btn" class="cyber-btn-outline magnetic-btn" style="border-color: var(--success); color: var(--success);">Use Temporarily</button>
-                <button id="save-sys-btn" class="cyber-btn-solid magnetic-btn" style="width: auto; margin: 0; padding: 0.8rem 2rem;">Deploy to Global DB</button>
+                <button id="save-sys-btn" class="cyber-btn-solid magnetic-btn" style="width: auto; padding: 0.8rem 2rem;">Deploy to Global DB</button>
             </div>
         </div>
     </div>
+
+    <footer class="fixed-bottom-center" id="global-footer">
+    <p>&copy; <span id="current-year"></span> ANY GPA. All Rights Reserved.</p>
+    <p class="signature">Designed & Developed by Nimna Official</p>
+</footer>
+
+    <style>
+        .contact-node {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            gap: 6px !important;
+            transform-style: flat !important; /* Kills the 3D depth layer bug */
+        }
+        .node-label {
+            transform: translateZ(0) !important; /* Snaps text flat to the screen */
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1.2 !important;
+            display: block !important;
+        }
+        .node-data {
+            transform: translateZ(0) !important; /* Snaps text flat to the screen */
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1.2 !important;
+            display: block !important;
+        }
+    </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="engine.js"></script>
+    
 </body>
 </html>

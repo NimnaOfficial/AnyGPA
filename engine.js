@@ -1,10 +1,12 @@
 // =====================================================================
-// ANY GPA CORE: NEXT-GEN SPA ENGINE
+// ANY GPA CORE: NEXT-GEN SPA ENGINE (V-FINAL)
 // =====================================================================
 
-const apiBase = "http://localhost/GpaCal/nima-core-calculator/src/api.php";
+const apiBase = "api.php";
 
-// Core DOM Elements
+// =====================================================================
+// 1. CORE DOM ELEMENTS & CACHE
+// =====================================================================
 const container = document.getElementById("modules-container");
 const sysSelector = document.getElementById("system-selector");
 const gpaDisplay = document.getElementById("final-gpa");
@@ -14,6 +16,11 @@ const printedSystemName = document.getElementById("printed-system-name");
 const dynamicRulesPanel = document.getElementById("dynamic-rules-panel");
 const loader = document.getElementById("global-loader");
 const gpaSvgFill = document.getElementById("gpa-svg-fill");
+const toastBox = document.getElementById("toast-container");
+
+// Mobile UX Failsafe
+const isTouchDevice = () =>
+  "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
 // Global State
 let currentGradeRules = {};
@@ -22,15 +29,16 @@ let tempSystemName = "";
 let moduleCount = 0;
 let currentStrategy = "STANDARD";
 
-// ---------------------------------------------------------------------
-// 1. FAILSAFES & UI PHYSICS
-// ---------------------------------------------------------------------
-window.addEventListener("error", function () {
+// =====================================================================
+// 2. HARDWARE-ACCELERATED PHYSICS (GPU OPTIMIZED)
+// =====================================================================
+
+// Global Error Catcher
+window.addEventListener("error", () => {
   if (loader) loader.classList.add("hidden");
 });
 
 function showToast(message, type = "info") {
-  const toastBox = document.getElementById("toast-container");
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
   toast.innerHTML = message;
@@ -47,22 +55,27 @@ function showToast(message, type = "info") {
   }, 3500);
 }
 
-document.addEventListener("mousemove", (e) => {
-  gsap.to("#cursor-glow", {
-    x: e.clientX,
-    y: e.clientY,
-    duration: 0.4,
-    ease: "power2.out",
-  });
+// 🚀 ENTERPRISE OPTIMIZATION: GSAP QuickSetter for massive performance boost
+if (!isTouchDevice()) {
+  const glowSetX = gsap.quickSetter("#cursor-glow", "x", "px");
+  const glowSetY = gsap.quickSetter("#cursor-glow", "y", "px");
 
-  document.querySelectorAll(".spotlight-card").forEach((card) => {
-    const rect = card.getBoundingClientRect();
-    card.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
-    card.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+  document.addEventListener("mousemove", (e) => {
+    // Direct GPU manipulation bypasses layout thrashing
+    glowSetX(e.clientX);
+    glowSetY(e.clientY);
+
+    document.querySelectorAll(".spotlight-card").forEach((card) => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+      card.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+    });
   });
-});
+}
 
 function apply3DTilt() {
+  if (isTouchDevice()) return; // Abort heavy physics on mobile
+
   document.querySelectorAll(".tilt-effect").forEach((el) => {
     el.addEventListener("mousemove", (e) => {
       const rect = el.getBoundingClientRect();
@@ -88,6 +101,8 @@ function apply3DTilt() {
 }
 
 function applyMagneticHover() {
+  if (isTouchDevice()) return; // Abort heavy physics on mobile
+
   document.querySelectorAll(".magnetic-btn, .remove-btn").forEach((btn) => {
     btn.addEventListener("mousemove", (e) => {
       const rect = btn.getBoundingClientRect();
@@ -104,9 +119,29 @@ function applyMagneticHover() {
   });
 }
 
-// ---------------------------------------------------------------------
-// 2. SPA ROUTER ENGINE
-// ---------------------------------------------------------------------
+// =====================================================================
+// 3. SPA ROUTER & MOBILE HUD NAVIGATION
+// =====================================================================
+const hamburgerBtn = document.getElementById("hamburger-btn");
+const mobileNavOverlay = document.getElementById("mobile-nav"); // This targets your new dropdown
+
+function toggleMobileMenu(forceClose = false) {
+  if (!hamburgerBtn || !mobileNavOverlay) return;
+
+  if (forceClose) {
+    hamburgerBtn.classList.remove("active");
+    mobileNavOverlay.classList.remove("active");
+  } else {
+    hamburgerBtn.classList.toggle("active");
+    mobileNavOverlay.classList.toggle("active");
+  }
+}
+
+if (hamburgerBtn) {
+  hamburgerBtn.addEventListener("click", () => toggleMobileMenu());
+}
+
+// Unified Router for both Desktop and Mobile links
 document.querySelectorAll(".nav-link").forEach((link) => {
   link.addEventListener("click", function (e) {
     e.preventDefault();
@@ -115,7 +150,9 @@ document.querySelectorAll(".nav-link").forEach((link) => {
     document
       .querySelectorAll(".nav-link")
       .forEach((l) => l.classList.remove("active"));
-    this.classList.add("active");
+    document
+      .querySelectorAll(`[data-target="${targetId}"]`)
+      .forEach((l) => l.classList.add("active"));
 
     document.querySelectorAll(".tab-section").forEach((sec) => {
       sec.classList.add("hidden");
@@ -131,16 +168,24 @@ document.querySelectorAll(".nav-link").forEach((link) => {
       { opacity: 0, y: 30 },
       { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" },
     );
+
+    toggleMobileMenu(true); // Retracts the HUD menu automatically
     window.scrollTo(0, 0);
   });
 });
 
-// ---------------------------------------------------------------------
-// 3. CORE ARCHITECTURE & API INTEGRATION
-// ---------------------------------------------------------------------
+// Auto-close menu if screen resizes to desktop
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 768) toggleMobileMenu(true);
+});
+
+// =====================================================================
+// 4. CORE DATABASE INTEGRATION
+// =====================================================================
 async function initSystem() {
   try {
     const res = await fetch(`${apiBase}?action=get_systems`);
+    if (!res.ok) throw new Error("Database unreadable.");
     const systems = await res.json();
 
     sysSelector.innerHTML = tempGradeRules
@@ -196,34 +241,41 @@ sysSelector.addEventListener("change", (e) => {
 });
 
 async function loadRulesForSystem(systemId, systemName) {
-  const res = await fetch(`${apiBase}?action=get_rules&id=${systemId}`);
-  const rulesArray = await res.json();
-  currentGradeRules = {};
-  rulesArray.forEach((rule) => {
-    currentGradeRules[rule.grade_letter] = parseFloat(rule.point_value);
-  });
-  printedSystemName.innerText = systemName;
+  try {
+    const res = await fetch(`${apiBase}?action=get_rules&id=${systemId}`);
+    const rulesArray = await res.json();
+    currentGradeRules = {};
+    rulesArray.forEach((rule) => {
+      currentGradeRules[rule.grade_letter] = parseFloat(rule.point_value);
+    });
+    printedSystemName.innerText = systemName;
 
-  if (
-    systemName.toUpperCase().includes("NIBM") ||
-    systemName.toUpperCase().includes("HND")
-  ) {
-    currentStrategy = "NIBM_HND";
-    injectNibmGatewayRules();
-  } else {
-    currentStrategy = "STANDARD";
-    dynamicRulesPanel.innerHTML = "";
-    dynamicRulesPanel.classList.add("hidden");
+    if (
+      systemName.toUpperCase().includes("NIBM") ||
+      systemName.toUpperCase().includes("HND")
+    ) {
+      currentStrategy = "NIBM_HND";
+      injectNibmGatewayRules();
+    } else {
+      currentStrategy = "STANDARD";
+      dynamicRulesPanel.innerHTML = "";
+      dynamicRulesPanel.classList.add("hidden");
+    }
+    updateAllDropdowns();
+    calculateGPA();
+  } catch (err) {
+    showToast("Failed to fetch rule set.", "error");
   }
-  updateAllDropdowns();
-  calculateGPA();
 }
 
 function injectNibmGatewayRules() {
   dynamicRulesPanel.classList.remove("hidden");
   dynamicRulesPanel.innerHTML = `<label class="custom-checkbox magnetic-btn"><input type="checkbox" id="comm-toggle" checked onchange="calculateGPA()"><span class="checkbox-box"></span> Passed Effective Comm-2</label>`;
   document.querySelectorAll(".module-row").forEach((row) => {
-    if (!row.querySelector(".attempt-toggle-container")) {
+    if (
+      !row.querySelector(".attempt-toggle-container") &&
+      !row.querySelector(".mod-attempt")
+    ) {
       row.insertAdjacentHTML(
         "beforeend",
         `<div class="attempt-container"><label class="custom-checkbox magnetic-btn"><input type="checkbox" class="mod-attempt" checked onchange="calculateGPA()"><span class="checkbox-box"></span> 1st Attempt</label></div>`,
@@ -232,10 +284,10 @@ function injectNibmGatewayRules() {
   });
 }
 
-// ---------------------------------------------------------------------
-// 4. UI ROW SPAWNER & MANAGER
-// ---------------------------------------------------------------------
-function spawnModuleRow(isInitial = false) {
+// =====================================================================
+// 5. UI ROW MANAGER
+// =====================================================================
+function spawnModuleRow() {
   if (moduleCount >= 20)
     return showToast("Maximum module limit reached.", "error");
   moduleCount++;
@@ -251,13 +303,13 @@ function spawnModuleRow(isInitial = false) {
   }
 
   row.innerHTML = `
-        <input type="text" placeholder="Course Title..." class="mod-name">
-        <select class="mod-grade" onchange="calculateGPA()">${optionsHTML}</select>
-        <input type="number" class="mod-credits" value="1" min="1" max="10" onchange="calculateGPA()">
+        <input type="text" placeholder="Course Title..." class="mod-name" aria-label="Course Name">
+        <select class="mod-grade" onchange="calculateGPA()" aria-label="Grade">${optionsHTML}</select>
+        <input type="number" class="mod-credits" value="1" min="1" max="10" onchange="calculateGPA()" aria-label="Credits">
         <div class="attempt-container">
             ${currentStrategy === "NIBM_HND" ? `<label class="custom-checkbox magnetic-btn"><input type="checkbox" class="mod-attempt" checked onchange="calculateGPA()"><span class="checkbox-box"></span> 1st Attempt</label>` : ""}
         </div>
-        <button class="remove-btn magnetic-btn" onclick="destroyModuleRow('${rowId}')">✕</button>
+        <button class="remove-btn magnetic-btn" onclick="destroyModuleRow('${rowId}')" aria-label="Remove Row">✕</button>
     `;
 
   container.appendChild(row);
@@ -283,7 +335,7 @@ window.destroyModuleRow = function (rowId) {
   const row = document.getElementById(rowId);
   gsap.to(row, {
     scale: 0.95,
-    x: 50,
+    x: isTouchDevice() ? 0 : 50,
     opacity: 0,
     duration: 0.3,
     ease: "power2.in",
@@ -295,9 +347,13 @@ window.destroyModuleRow = function (rowId) {
   });
 };
 
-// ---------------------------------------------------------------------
-// 5. ALPHANUMERIC MATRIX SCRAMBLE & MATHEMATICS
-// ---------------------------------------------------------------------
+document
+  .getElementById("add-module-btn")
+  .addEventListener("click", () => spawnModuleRow());
+
+// =====================================================================
+// 6. ALPHANUMERIC MATRIX SCRAMBLE & MATHEMATICS
+// =====================================================================
 window.calculateGPA = function () {
   const rows = document.querySelectorAll(".module-row");
   let points = 0,
@@ -323,7 +379,7 @@ window.calculateGPA = function () {
     }
   });
 
-  if (moduleCount === 0) {
+  if (moduleCount === 0 || credits === 0) {
     gpaDisplay.innerText = "0.00";
     gpaSvgFill.style.strokeDashoffset = 283;
     awardStatusDisplay.innerText = "AWAITING DATA";
@@ -332,7 +388,7 @@ window.calculateGPA = function () {
     return;
   }
 
-  const finalGpaValue = credits > 0 ? points / credits : 0;
+  const finalGpaValue = points / credits;
   const finalGpaStr = finalGpaValue.toFixed(2);
   totalCreditsDisplay.innerText = credits;
 
@@ -401,9 +457,9 @@ function setAward(text, color) {
   );
 }
 
-// ---------------------------------------------------------------------
-// 6. NATIVE PROGRAMMATIC PDF ENGINE (jsPDF + AutoTable)
-// ---------------------------------------------------------------------
+// =====================================================================
+// 7. NATIVE PROGRAMMATIC PDF ENGINE
+// =====================================================================
 document.getElementById("export-pdf-btn").addEventListener("click", () => {
   if (moduleCount === 0)
     return showToast("Dashboard empty. No courses to export.", "error");
@@ -411,9 +467,8 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
   showToast("Drawing Mathematical PDF Record...", "info");
 
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("p", "mm", "a4"); // Portrait, Millimeters, A4 size
+  const doc = new jsPDF("p", "mm", "a4");
 
-  // Extracted Data
   const uniName = sysSelector.options[sysSelector.selectedIndex].text.replace(
     " [Session Only]",
     "",
@@ -429,7 +484,6 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
       : "Standard Cumulative Scale";
   let totalCredits = 0;
 
-  // Build Table Array
   let tableData = [];
   document.querySelectorAll(".module-row").forEach((row) => {
     const name =
@@ -443,10 +497,8 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
     tableData.push([name, credits.toString(), gradeText]);
   });
 
-  // --- DRAW PDF CONTENT --- //
   const pageWidth = doc.internal.pageSize.getWidth();
 
-  // Document Title
   doc.setFont("helvetica", "bold");
   doc.setFontSize(22);
   doc.setTextColor(10, 10, 10);
@@ -454,12 +506,10 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
     align: "center",
   });
 
-  // Header Line
   doc.setLineWidth(1);
   doc.setDrawColor(0, 0, 0);
   doc.line(15, 30, pageWidth - 15, 30);
 
-  // University Info
   doc.setFontSize(16);
   doc.setTextColor(50, 50, 50);
   doc.text(uniName, 15, 42);
@@ -469,7 +519,6 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
   doc.setTextColor(100, 100, 100);
   doc.text("Certified & Encrypted by ANY GPA Global SaaS Engine", 15, 48);
 
-  // Meta Data Box
   doc.setFillColor(245, 245, 245);
   doc.roundedRect(15, 55, pageWidth - 30, 25, 3, 3, "F");
 
@@ -488,7 +537,6 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
     align: "right",
   });
 
-  // Native Data Table Generation
   doc.autoTable({
     startY: 85,
     head: [["Course / Module Title", "Credits", "Grade Awarded"]],
@@ -501,13 +549,10 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
       halign: "center",
     },
     bodyStyles: { textColor: 30, halign: "center" },
-    columnStyles: {
-      0: { halign: "left", cellWidth: 100 },
-    },
+    columnStyles: { 0: { halign: "left", cellWidth: 100 } },
     styles: { fontSize: 11, cellPadding: 6 },
   });
 
-  // Summary Box
   const finalY = doc.lastAutoTable.finalY + 15;
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(0.5);
@@ -519,11 +564,8 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
   doc.text("OVERALL ACADEMIC STANDING", 20, finalY + 10);
 
   doc.setFontSize(18);
-  if (awardStatus.includes("INELIGIBLE")) {
-    doc.setTextColor(200, 0, 0);
-  } else {
-    doc.setTextColor(0, 150, 0);
-  }
+  if (awardStatus.includes("INELIGIBLE")) doc.setTextColor(200, 0, 0);
+  else doc.setTextColor(0, 150, 0);
   doc.text(awardStatus, 20, finalY + 22);
 
   doc.setFontSize(10);
@@ -534,9 +576,7 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
   doc.setTextColor(10, 10, 10);
   doc.text(gpaValue, pageWidth - 20, finalY + 24, { align: "right" });
 
-  // Official Signatures
   const sigY = finalY + 60;
-
   doc.setLineWidth(0.5);
   doc.line(25, sigY, 85, sigY);
   doc.setFontSize(12);
@@ -560,7 +600,6 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
   doc.setTextColor(100, 100, 100);
   doc.text("Automated Ledger", pageWidth - 55, sigY + 14, { align: "center" });
 
-  // Add Red "Official Seal" Text
   doc.setFont("helvetica", "bold");
   doc.setTextColor(180, 0, 0);
   doc.text("OFFICIAL", pageWidth - 55, sigY - 12, {
@@ -573,9 +612,9 @@ document.getElementById("export-pdf-btn").addEventListener("click", () => {
   showToast("Official Transcript Generated Successfully!", "success");
 });
 
-// ---------------------------------------------------------------------
-// 7. ADVANCED STRATEGY BUILDER
-// ---------------------------------------------------------------------
+// =====================================================================
+// 8. ADVANCED STRATEGY BUILDER
+// =====================================================================
 const builderModal = document.getElementById("builder-modal");
 const gradesContainer = document.getElementById("custom-grades-container");
 
@@ -616,12 +655,11 @@ document
   .getElementById("add-custom-grade-btn")
   .addEventListener("click", () => addCustomGradeRow());
 
-// Local Session Save Strategy
 document.getElementById("use-temp-sys-btn").addEventListener("click", () => {
   const sysName =
     document.getElementById("new-sys-name").value.trim() || "Custom Session";
-  let customRules = {};
-  let valid = false;
+  let customRules = {},
+    valid = false;
 
   document.querySelectorAll(".custom-grade-row").forEach((row) => {
     const g = row.querySelector(".cg-name").value.trim();
@@ -654,7 +692,6 @@ document.getElementById("use-temp-sys-btn").addEventListener("click", () => {
   document.getElementById("close-modal-btn").click();
 });
 
-// Database Save Strategy
 document.getElementById("save-sys-btn").addEventListener("click", async () => {
   const sysName = document.getElementById("new-sys-name").value.trim();
   const sysCountry = document.getElementById("new-sys-country").value.trim();
@@ -702,9 +739,9 @@ document.getElementById("save-sys-btn").addEventListener("click", async () => {
   }
 });
 
-// ---------------------------------------------------------------------
-// 8. WEB3FORMS SECURE TRANSMISSION
-// ---------------------------------------------------------------------
+// =====================================================================
+// 9. WEB3FORMS SECURE TRANSMISSION
+// =====================================================================
 document.getElementById("dm-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const btn = document.getElementById("dm-submit-btn");
@@ -732,9 +769,9 @@ document.getElementById("dm-form").addEventListener("submit", async (e) => {
   }
 });
 
-// ---------------------------------------------------------------------
-// 9. THE SECRET GOD MODE KEYLOGGER
-// ---------------------------------------------------------------------
+// =====================================================================
+// 10. THE SECRET GOD MODE KEYLOGGER
+// =====================================================================
 let adminCredentials = { username: "", password: "" };
 let keySequence = "";
 const adminWarningModal = document.getElementById("admin-warning-modal");
@@ -857,7 +894,6 @@ document
     }
   });
 
-// Returns the view back to the public state
 window.showMainApp = function () {
   adminDashboardView.classList.add("hidden");
   mainAppView.classList.remove("hidden");
@@ -868,9 +904,8 @@ window.showMainApp = function () {
   document
     .querySelectorAll(".tab-section")
     .forEach((sec) => sec.classList.add("hidden"));
-  const calcSec = document.getElementById("calculator-section");
-  calcSec.classList.remove("hidden");
-  calcSec.classList.add("active-section");
+  document.getElementById("calculator-section").classList.remove("hidden");
+  document.getElementById("calculator-section").classList.add("active-section");
 
   document
     .querySelectorAll(".nav-link")
@@ -918,7 +953,10 @@ window.purgeSystem = async function (id) {
   }
 };
 
-document
-  .getElementById("add-module-btn")
-  .addEventListener("click", () => spawnModuleRow(false));
+// =====================================================================
+// 11. SYSTEM INITIALIZATION
+// =====================================================================
 document.addEventListener("DOMContentLoaded", initSystem);
+document
+  .querySelectorAll(".mobile-year, #current-year")
+  .forEach((el) => (el.textContent = new Date().getFullYear()));
