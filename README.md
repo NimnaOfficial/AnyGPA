@@ -46,6 +46,7 @@ graph TD
     style B fill:#111,stroke:#FFD700,stroke-width:2px,color:#fff
     style D fill:#003300,stroke:#00e676,stroke-width:2px,color:#fff
     style E fill:#330033,stroke:#cc00cc,stroke-width:2px,color:#fff
+
 ```
 ## 🗄️ Database Mapping & Architecture
 
@@ -111,6 +112,7 @@ sequenceDiagram
     Edge API (WASM)-->>Admin: Purge Local Buffer & Lock View
     destroy Edge API (WASM)
     Edge API (WASM)-xAdmin: Terminate Connection
+
 ```
 ## 👨‍💻 System Architecture & Lead Engineering
 
