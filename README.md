@@ -11,6 +11,8 @@
 
 This module serves as the academic calculation branch of the broader **Integrated Production and Resource Management System** portfolio.
 
+![Alt text]([image-url](https://i.postimg.cc/PJhcVSzR/anygpa.png))
+
 ---
 
 ## ✨ Enterprise Features
