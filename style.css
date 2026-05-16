@@ -293,3 +293,89 @@ select.mod-grade { background-image: url("data:image/svg+xml;charset=UTF-8,%3Csv
     background: var(--danger); 
     color: #fff; 
 }
+
+/* =====================================================================
+   13. EXTRACTED INLINE STYLES (LINTER COMPLIANCE FIXES)
+   ===================================================================== */
+.brand-dot { color: var(--brand-main); }
+.ai-scan-controls { display: flex; gap: 1rem; }
+.ai-scan-btn { background: rgba(168, 85, 247, 0.1); color: #c084fc; border: 1px solid #7707df; }
+.ai-warning-banner { border-left: 4px solid #facc15; background: rgba(250, 204, 21, 0.05); padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px; }
+.warning-flex { display: flex; justify-content: space-between; align-items: center; }
+.warning-text { color: #facc15; font-size: 0.9rem; margin: 0; line-height: 1.4; }
+.warning-close-btn { background: none; border: none; color: #facc15; cursor: pointer; font-size: 1.2rem; padding: 0 0.5rem; }
+
+.about-panel { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; text-align: center; }
+.about-title { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: 1.5rem; color: var(--text-main); letter-spacing: -2px; }
+.about-desc { color: var(--text-muted); max-width: 700px; margin: 0 auto 4rem auto; line-height: 1.8; font-size: 1.1rem; }
+
+.contact-layout { max-width: 1200px; margin: 0 auto; align-items: start; }
+.contact-info-panel { padding: 3rem; }
+.contact-title { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 2rem; color: var(--text-main); letter-spacing: -1px; }
+.contact-form-panel { padding: 3rem; border-color: var(--brand-main); box-shadow: inset 0 0 30px rgba(255,215,0,0.05); }
+.sys-badge-light { color: #fff; border-color: #fff; background: rgba(255,255,255,0.1); }
+.form-heading { margin-bottom: 2rem; font-size: 1.5rem; }
+.dm-form { display: flex; flex-direction: column; gap: 1rem; }
+
+/* UTILITY SPACING */
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.mt-half { margin-top: 0.5rem; }
+
+/* ADMIN DASHBOARD */
+.admin-dashboard { margin-top: 100px; padding: 0 5vw; max-width: 1200px; margin-left: auto; margin-right: auto; }
+.admin-header { flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.sys-badge-danger { background: rgba(255,68,68,0.2); border-color: var(--danger); color: var(--danger); }
+.admin-title { font-size: 3rem; color: var(--text-main); margin-top: 10px; }
+.btn-danger-outline { border-color: var(--danger); color: var(--danger); }
+.admin-table-panel { padding: 2rem; overflow-x: auto; }
+.admin-subtitle { color: var(--text-main); margin-bottom: 1rem; }
+.admin-table { min-width: 600px; }
+
+/* WARNING MODALS */
+.warning-modal-overlay { background: rgba(10, 0, 0, 0.95); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+.warning-modal-content { border: 1px solid var(--danger); box-shadow: inset 0 0 50px rgba(255,0,0,0.1), 0 0 100px rgba(255, 68, 68, 0.15); text-align: center; }
+.warning-icon { margin-bottom: 1.5rem; filter: drop-shadow(0 0 10px rgba(255,0,0,0.5)); }
+.warning-heading { color: var(--danger); letter-spacing: 4px; font-weight: 800; font-size: clamp(1.5rem, 4vw, 2rem); }
+.warning-subheading { color: #ff8888; font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem; }
+.warning-desc { color: rgba(255,255,255,0.5); font-size: 0.95rem; margin-bottom: 2.5rem; }
+.warning-instruction { color: var(--text-main); font-size: 0.8rem; letter-spacing: 3px; margin-bottom: 0.8rem; opacity: 0.7; }
+.security-input { border-color: rgba(255,0,0,0.5); background: rgba(255,0,0,0.05); color: var(--danger); text-align: center; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; font-size: 1.2rem; }
+.modal-actions-center { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 2.5rem; }
+.modal-actions-end { display: flex; flex-wrap: wrap; margin-top: 2.5rem; justify-content: flex-end; gap: 1rem; }
+.btn-muted-outline { border-color: var(--text-muted); color: var(--text-muted); }
+.btn-danger-solid { background: var(--danger); color: white; opacity: 0.3; pointer-events: none; box-shadow: 0 0 20px rgba(255,0,0,0.4); }
+.btn-success-outline { border-color: var(--success); color: var(--success); }
+.btn-auto-width { width: auto; padding: 0.8rem 2rem; }
+
+/* LOGIN MODAL */
+.login-modal-content { text-align: center; max-width: 400px; border-color: var(--brand-main); box-shadow: inset 0 0 30px rgba(255,215,0,0.05); }
+.login-heading { color: var(--brand-main); letter-spacing: 2px; }
+.login-desc { margin-bottom: 2rem; color: var(--text-muted); }
+.login-input { text-align: center; letter-spacing: 2px; margin-bottom: 1rem; }
+.login-input-pass { text-align: center; letter-spacing: 8px; }
+
+/* BUILDER MODAL */
+.builder-modal-content { max-width: 700px; }
+.builder-desc { margin-bottom: 1rem; color: var(--text-muted); }
+.builder-input-group { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+.builder-input-lg { flex: 1; min-width: 200px; }
+.builder-input-sm { flex: 1; min-width: 150px; }
+.builder-label { color: var(--brand-main); font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; }
+.btn-full-width { width: 100%; margin-top: 1rem; font-size: 0.85rem; }
+
+/* FIXING ROGUE STYLE TAGS */
+.contact-node {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    transform-style: flat !important; 
+}
+.node-label, .node-data {
+    transform: translateZ(0) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.2 !important;
+    display: block !important;
+}
