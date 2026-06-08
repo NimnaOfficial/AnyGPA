@@ -9,7 +9,7 @@
 
 **ANY GPA** is a high-performance, AI-driven, and globally crowdsourced academic calculation engine. Built for absolute flexibility, it allows students from any university worldwide to input, save, and share their specific grading frameworks, while utilizing state-of-the-art visual AI to automate data entry from official transcripts.
 
-This module serves as the academic calculation branch of the broader **Integrated Production and Resource Management System** portfolio.
+
 
 ![Alt text](https://i.postimg.cc/PJhcVSzR/anygpa.png)
 
