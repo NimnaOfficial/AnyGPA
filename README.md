@@ -5,7 +5,7 @@
 ![AI](https://img.shields.io/badge/AI-Gemini_1.5_Flash-8E75B2.svg?logo=google&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-Cloud_Native-4479A1.svg?logo=mysql&logoColor=white)
 ![Wasmer](https://img.shields.io/badge/Deployed_on-Wasmer_Edge-black.svg?logo=webassembly&logoColor=white)
-
+![GSAP](https://img.shields.io/badge/Physics-GSAP_3.12-88CE02.svg)
 
 **ANY GPA** is a high-performance, AI-driven, and globally crowdsourced academic calculation engine. Built for absolute flexibility, it allows students from any university worldwide to input, save, and share their specific grading frameworks, while utilizing state-of-the-art visual AI to automate data entry from official transcripts.
 
